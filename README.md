@@ -1,5 +1,5 @@
 # carml-jar-ex
-Example project for using carml-jar
+Example project for using [carml-jar](https://github.com/pmaria/carml-jar).
 
 ```
 java -jar carml-jar-0.0.3.jar \
