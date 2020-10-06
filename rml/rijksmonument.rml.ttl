@@ -1,0 +1,64 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix pdok: <http://data.pdok.nl/def/pdok#> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix schema: <http://schema.org/> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#> . #TODO: definitief!
+@prefix ceo_beg: <http://linkeddata.cultureelerfgoed.nl/ceo/id/begrip> .
+
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix fno: <http://semweb.datasciencelab.be/ns/function#> .
+@prefix fnml: <http://semweb.mmlab.be/ns/fnml#> .
+@prefix carml: <http://carml.taxonic.com/carml/> .
+
+#@prefix fnPdok: <http://data.pdok.nl/mappings/functions#> .
+#@prefix fnBi: <http://data.pdok.nl/mappings/bi/functions#> .
+#@prefix big: <http://data.pdok.nl/id/dataset/bi> .
+@prefix ceog: <http://linkeddata.cultureelerfgoed.nl/def/ceo> .
+@prefix : <http://linkeddata.cultureelerfgoed.nl/mappings/ceo#> . #TODO: check of dit een valide default prefix is???
+
+######################################################################################
+# Main source
+######################################################################################
+:CEO_rijksmonument_LS
+  rml:source [
+    a carml:Stream ;
+    ] ;
+#    carml:url "cho_instance_vb1.xml" ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument" ;
+.
+
+######################################################################################
+# rijksmonument
+######################################################################################
+:CEO_rijksmonument a rr:TriplesMap ;
+  rml:logicalSource :CEO_rijksmonument_LS ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/{choId}" ;#TODO: check naam  URI
+    rr:class
+      ceo:Rijksmonument ;
+    rr:graph ceog: ;
+  ] ;
+  rr:predicateObjectMap
+    :CEO_choId_POM ,
+    :CEO_samenhang_POM ;
+.
+
+#:CEO_rijksmonument a rr:TriplesMap ;
+#  rml:logicalSource :CEO_rijksmonument_LS ;
+#  rr:subjectMap [
+#    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/{choId}" ;#TODO: check naam  URI
+#    rr:class
+#      ceo:Rijksmonument ;
+#    rr:graph ceog: ;
+#  ] ;
+#  rr:predicateObjectMap
+#    :CEO_choId_POM ;
+#.
