@@ -1,0 +1,4 @@
+## This directory can be used to generate output files into
+# They will be ignored by git
+*
+!.gitignore
