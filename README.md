@@ -25,30 +25,33 @@ Bash:
 
 ```shell script
 java -jar carml-jar-0.0.3.jar \
-  -m rml \
-  -rsl input \
+  -m rml/_generic.rml.ttl rml/rijksmonument.rml.ttl \
+  -i input/cho_instance_vb1.xml \
+  -o output/ceo-demo-out.ttl \
   -of ttl \
-  -p rdfs xsd ex
+  -c rml/context.ld.json
 ```
 
 Windows PowerShell
 
 ```shell script
 java -jar carml-jar-0.0.3.jar `
-  -m rml `
-  -rsl input `
+  -m rml\_generic.rml.ttl rml\rijksmonument.rml.ttl `
+  -i input\cho_instance_vb1.xml `
+  -o output\ceo-demo-out.ttl `
   -of ttl `
-  -p rdfs xsd ex
+  -c rml/context.ld.json
 ```
 
 Windows CMD
 
 ```shell script
 java -jar carml-jar-0.0.3.jar ^
-  -m rml ^
-  -rsl input ^
+  -m rml\_generic.rml.ttl rml\rijksmonument.rml.ttl ^
+  -i input\cho_instance_vb1.xml ^
+  -o output\ceo-demo-out.ttl ^
   -of ttl ^
-  -p rdfs xsd ex
+  -c rml/context.ld.json
 ```
 
 ## Logging

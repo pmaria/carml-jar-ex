@@ -7,7 +7,7 @@
 @prefix time: <http://www.w3.org/2006/time#> .
 @prefix schema: <http://schema.org/> .
 @prefix org: <http://www.w3.org/ns/org#> .
-@prefix ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#> . #TODO: definitief!
+@prefix ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#> .
 @prefix ceo_beg: <http://linkeddata.cultureelerfgoed.nl/ceo/id/begrip> .
 
 @prefix rr: <http://www.w3.org/ns/r2rml#>.
@@ -18,21 +18,19 @@
 @prefix carml: <http://carml.taxonic.com/carml/> .
 
 #@prefix fnPdok: <http://data.pdok.nl/mappings/functions#> .
-#@prefix fnBi: <http://data.pdok.nl/mappings/bi/functions#> .
-#@prefix big: <http://data.pdok.nl/id/dataset/bi> .
 @prefix ceog: <http://linkeddata.cultureelerfgoed.nl/def/ceo> .
-@prefix : <http://linkeddata.cultureelerfgoed.nl/mappings/ceo#> . #TODO: check of dit een valide default prefix is???
+@prefix : <http://linkeddata.cultureelerfgoed.nl/mappings/ceo#> .
 
 ######################################################################################
 # Main source
 ######################################################################################
 :CEO_rijksmonument_LS
   rml:source [
-    a carml:Stream ;
-    ] ;
+      a carml:Stream ;
+  ] ;
 #    carml:url "cho_instance_vb1.xml" ;
-    rml:referenceFormulation ql:XPath ;
-    rml:iterator "/cultuurHistorischeObjecten/rijksmonument" ;
+  rml:referenceFormulation ql:XPath ;
+  rml:iterator "/cultuurHistorischeObjecten/rijksmonument" ;
 .
 
 ######################################################################################
@@ -41,24 +39,34 @@
 :CEO_rijksmonument a rr:TriplesMap ;
   rml:logicalSource :CEO_rijksmonument_LS ;
   rr:subjectMap [
-    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/{choId}" ;#TODO: check naam  URI
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/{choId}" ;
     rr:class
       ceo:Rijksmonument ;
     rr:graph ceog: ;
   ] ;
   rr:predicateObjectMap
     :CEO_choId_POM ,
-    :CEO_samenhang_POM ;
+    :CEO_heeftBasisregistratieRelatie_POM ,
+    :CEO_samenhang_POM ,
+    [
+      rr:predicate ceo:rijksmonumentnummer ;
+      rr:objectMap [
+        rml:reference "rijksmonumentnummer" ;
+        rr:datatype xsd:integer ;
+      ] ;
+    ] ,
+    [
+      rr:predicate ceo:heeftJuridischeStatus ;
+      rr:objectMap [
+        rml:reference "juridischeStatus/uri" ;
+        rr:termType rr:IRI ;
+      ] ;
+    ] ,
+    [
+      rr:predicate ceo:heeftMonumentAard ;
+      rr:objectMap [
+        rml:reference "aardMonument/uri" ;
+        rr:termType rr:IRI ;
+      ] ;
+    ] ;
 .
-
-#:CEO_rijksmonument a rr:TriplesMap ;
-#  rml:logicalSource :CEO_rijksmonument_LS ;
-#  rr:subjectMap [
-#    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/{choId}" ;#TODO: check naam  URI
-#    rr:class
-#      ceo:Rijksmonument ;
-#    rr:graph ceog: ;
-#  ] ;
-#  rr:predicateObjectMap
-#    :CEO_choId_POM ;
-#.

@@ -7,7 +7,7 @@
 @prefix time: <http://www.w3.org/2006/time#> .
 @prefix schema: <http://schema.org/> .
 @prefix org: <http://www.w3.org/ns/org#> .
-@prefix ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#> . #TODO: definitief!
+@prefix ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#> .
 @prefix ceo_beg: <http://linkeddata.cultureelerfgoed.nl/ceo/id/begrip> .
 
 @prefix rr: <http://www.w3.org/ns/r2rml#>.
@@ -18,13 +18,11 @@
 @prefix carml: <http://carml.taxonic.com/carml/> .
 
 #@prefix fnPdok: <http://data.pdok.nl/mappings/functions#> .
-#@prefix fnBi: <http://data.pdok.nl/mappings/bi/functions#> .
-#@prefix big: <http://data.pdok.nl/id/dataset/bi> .
 @prefix ceog: <http://linkeddata.cultureelerfgoed.nl/def/ceo> .
-@prefix : <http://linkeddata.cultureelerfgoed.nl/mappings/ceo#> . #TODO: check of dit een valide default prefix is???
+@prefix : <http://linkeddata.cultureelerfgoed.nl/mappings/ceo#> .
 
 ######################################################################################
-# Generic CEO POM
+# Generic CEO Predicate Object Maps
 ######################################################################################
 
 :CEO_choId_POM a rr:PredicateObjectMap ;
@@ -35,23 +33,15 @@
     ]
 .
 
-:CEO_samenhang a rr:TriplesMap ;
-  rml:logicalSource [
-    rml:source [
-     a carml:Stream ;
-      ] ;
-    rml:referenceFormulation ql:XPath ;
-    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/samenhang" ;
+:CEO_heeftBasisregistratieRelatie_POM a rr:PredicateObjectMap ;
+  rr:predicate ceo:heeftBasisregistratieRelatie ;
+  rr:objectMap [
+    rr:parentTriplesMap :BasisregistratieRelatie ;
+    rr:joinCondition [
+      rr:child "basisregistratie/basisregistratie_id" ;
+      rr:parent "basisregistratie_id" ;
+    ] ;
   ] ;
-  rr:subjectMap [
-    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/samenhang/{../choId}-{isRelatieVan/choId}" ;#TODO: check naam  URI
-    rr:class
-      ceo:Samenhang ;
-    rr:graph ceog: ;
-  ] ;
-#  rr:predicateObjectMap
-#    :CEO_samenhang_nummer_POM ,
-#    :CEO_samenhang_toelichting_POM ;
 .
 
 :CEO_samenhang_POM a rr:PredicateObjectMap ;
@@ -64,3 +54,112 @@
       ] ;
     ] ;
 .
+
+######################################################################################
+# Samenhang Triples
+######################################################################################
+
+:CEO_samenhang a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+     a carml:Stream ;
+      ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/samenhang" ;
+  ] ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/samenhang/{../choId}-{isRelatieVan/choId}" ;
+    rr:class ceo:Samenhang ;
+    rr:graph ceog: ;
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate ceo:samenhangToelichting ;
+    rr:objectMap [
+      rml:reference "toelichting" ;
+    ] ;
+  ] ;
+.
+
+######################################################################################
+# BasisregistratieRelatie Triples
+######################################################################################
+
+:BasisregistratieRelatie a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+     a carml:Stream ;
+      ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/basisregistratie" ;
+  ] ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/basisregistratierelatie/{basisregistratie_id}" ;
+    rr:class ceo:BasisregistratieRelatie ;
+  ] ;
+  rr:predicateObjectMap
+    :CEO_heeftBRKRelatie_POM ;
+.
+
+:CEO_heeftBRKRelatie_POM a rr:PredicateObjectMap ;
+  rr:predicate ceo:heeftBRKRelatie ;
+  rr:objectMap [
+    rr:parentTriplesMap :BRKRelatie ;
+    rr:joinCondition 
+      [
+        rr:child "brk/gemeentecode" ;
+        rr:parent "gemeentecode" ;
+      ] ,
+      [
+        rr:child "brk/sectie" ;
+        rr:parent "sectie" ;
+      ] ,
+      [
+        rr:child "brk/perceelnummer" ;
+        rr:parent "perceelnummer" ;
+      ] ;
+  ] ;
+.
+
+######################################################################################
+# BRKRelatie Triples
+######################################################################################
+
+:BRKRelatie a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+     a carml:Stream ;
+      ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/basisregistratie/brk" ;
+  ] ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/brkrelatie/{gemeentecode}.{sectie}.{perceelnummer}" ;
+    rr:class ceo:BRKRelatie ;
+  ] ;
+.
+
+######################################################################################
+# Concept Triples
+######################################################################################
+
+# :Concept a rr:TriplesMap ;
+#   rml:logicalSource [
+#     rml:source [
+#       a carml:Stream ;
+#     ] ;
+#     rml:referenceFormulation ql:XPath ;
+#     rml:iterator "//*[*/name()='preflabel']" ;
+#   ] ;
+#   rr:subjectMap [
+#     rml:reference "uri" ;
+#     rr:termType rr:IRI ;
+#     # rr:class skos:Concept ;
+#   ] ;
+#   rr:predicateObjectMap [
+#     rr:predicate skos:prefLabel ;
+#     rr:objectMap [
+#       rml:reference "preflabel" ;
+#       rr:language "nl" ;
+#     ] ;
+#   ] ;
+# .
