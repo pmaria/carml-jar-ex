@@ -47,6 +47,11 @@
   rr:predicateObjectMap
     :CEO_choId_POM ,
     :CEO_heeftBasisregistratieRelatie_POM ,
+    :CEO_heeftOmschrijving_POM ,
+    :CEO_heeftOorspronkelijkeFunctie_POM ,
+    :CEO_heeftHuidigeFunctie_POM ,
+    :CEO_heeftGeometrie_POM ,
+    :CEO_heeftLocatieAanduiding_POM ,
     :CEO_samenhang_POM ,
     [
       rr:predicate ceo:rijksmonumentnummer ;

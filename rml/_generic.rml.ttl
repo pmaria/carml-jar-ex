@@ -7,6 +7,7 @@
 @prefix time: <http://www.w3.org/2006/time#> .
 @prefix schema: <http://schema.org/> .
 @prefix org: <http://www.w3.org/ns/org#> .
+@prefix gsp: <http://www.opengis.net/ont/geosparql#> .
 @prefix ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#> .
 @prefix ceo_beg: <http://linkeddata.cultureelerfgoed.nl/ceo/id/begrip> .
 
@@ -53,6 +54,79 @@
         rr:parent "isRelatieVan/choId" ;
       ] ;
     ] ;
+.
+
+:CEO_kennisregistratie_join
+  rr:child "kennisregistratie/kennisregistratienummer" ;
+  rr:parent "kennisregistratienummer" ;
+.
+
+:CEO_heeftOmschrijving_POM a rr:PredicateObjectMap ;
+  rr:predicate 
+    ceo:heeftKennisregistratie ,
+    ceo:heeftOmschrijving ;
+  rr:objectMap [
+    rr:parentTriplesMap :Omschrijving ;
+    rr:joinCondition :CEO_kennisregistratie_join ;
+  ] ;
+.
+
+:CEO_heeftOorspronkelijkeFunctie_POM a rr:PredicateObjectMap ;
+  rr:predicate 
+    ceo:heeftKennisregistratie ,
+    ceo:heeftFunctie ,
+    ceo:heeftOorspronkelijkeFunctie ;
+  rr:objectMap [
+    rr:parentTriplesMap :OorspronkelijkeFunctie ;
+    rr:joinCondition :CEO_kennisregistratie_join ;
+  ] ;
+.
+
+:CEO_heeftHuidigeFunctie_POM a rr:PredicateObjectMap ;
+  rr:predicate 
+    ceo:heeftKennisregistratie ,
+    ceo:heeftFunctie ,
+    ceo:heeftHuidigeFunctie ;
+  rr:objectMap [
+    rr:parentTriplesMap :HuidigeFunctie ;
+    rr:joinCondition :CEO_kennisregistratie_join ;
+  ] ;
+.
+
+:CEO_heeftGeometrie_POM a rr:PredicateObjectMap ;
+  rr:predicate 
+    gsp:hasGeometry ,
+    ceo:heeftGeometrie ;
+  rr:objectMap [
+    rr:parentTriplesMap :Geometrie ;
+      rr:joinCondition [
+        rr:child "geometrie/geometrieId" ;
+        rr:parent "geometrieId" ;
+      ] ;
+    ] ;
+.
+
+:CEO_heeftLocatieAanduiding_POM a rr:PredicateObjectMap ;
+  rr:predicate ceo:heeftLocatieAanduiding ;
+  rr:objectMap [
+    rr:parentTriplesMap :LocatieAanduiding ;
+      rr:joinCondition [
+        rr:child "locatieAanduiding/locatieAanduidingId" ;
+        rr:parent "locatieAanduidingId" ;
+      ] ;
+    ] ;
+.
+
+######################################################################################
+# Generic CEO Kennisregistratie Predicate Object Maps
+######################################################################################
+
+:CEO_formeelStandpunt_POM a rr:PredicateObjectMap ;
+  rr:predicate ceo:formeelStandpunt ;
+  rr:objectMap [
+    rml:reference "formeelStandpunt" ;
+    rr:datatype xsd:boolean ;
+  ] ;
 .
 
 ######################################################################################
@@ -139,27 +213,222 @@
 .
 
 ######################################################################################
+# Kennisregistratie - Omschrijving Triples
+######################################################################################
+
+:Omschrijving a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a carml:Stream ;
+    ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/kennisregistratie[typeKennis = 'Omschrijving']" ;
+  ] ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/omschrijving/{kennisregistratienummer}" ;
+    rr:class ceo:Omschrijving ;
+  ] ;
+  rr:predicateObjectMap
+    :CEO_formeelStandpunt_POM ,
+    [
+      rr:predicate ceo:omschrijving ;
+      rr:objectMap [
+        rml:reference "omschrijving/tekst" ;
+      ] ;
+    ] ;
+.
+
+######################################################################################
+# Generiek constructen Kennisregistratie - Functie
+######################################################################################
+
+:Functie_SM a rr:SubjectMap ;
+  rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/functie/{kennisregistratienummer}" ;
+  rr:class ceo:Functie ;
+.
+
+:Functie_heeftFunctienaam_POM a rr:PredicateObjectMap ;
+  rr:predicate ceo:heeftFunctieNaam ;
+  rr:objectMap [
+    rml:reference "functie/functienaam/uri" ;
+    rr:termType rr:IRI ;
+  ] ;
+.
+
+:Functie_hoofdfunctie_POM a rr:PredicateObjectMap ;
+  rr:predicate ceo:hoofdfunctie ;
+  rr:objectMap [
+    rml:reference "functie/hoofdfunctie" ;
+    rr:datatype xsd:boolean ;
+  ] ;
+.
+
+######################################################################################
+# Kennisregistratie - OorspronkelijkeFunctie Triples
+######################################################################################
+
+:OorspronkelijkeFunctie a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a carml:Stream ;
+    ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/kennisregistratie[functie/functiesoort/preflabel = 'oorspronkelijke functie']" ;
+  ] ;
+  rr:subjectMap :Functie_SM ;
+  rr:predicateObjectMap
+    :CEO_formeelStandpunt_POM ,
+    :Functie_heeftFunctienaam_POM ,
+    :Functie_hoofdfunctie_POM ;
+.
+
+######################################################################################
+# Kennisregistratie - HuidigeFunctie Triples
+######################################################################################
+
+:HuidigeFunctie a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a carml:Stream ;
+    ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/kennisregistratie[functie/functiesoort/preflabel = 'huidige functie']" ;
+  ] ;
+  rr:subjectMap :Functie_SM ;
+  rr:predicateObjectMap
+    :CEO_formeelStandpunt_POM ,
+    :Functie_heeftFunctienaam_POM ,
+    :Functie_hoofdfunctie_POM ;
+.
+
+######################################################################################
+# Geometrie Triples
+######################################################################################
+
+:Geometrie a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a carml:Stream ;
+    ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/geometrie" ;
+  ] ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/geometrie/{geometrieId}" ;
+    rr:class
+      ceo:Geometrie ,
+      gsp:Geometry ;
+  ] ;
+  rr:predicateObjectMap
+    [
+      rr:predicate ceo:geometrienummer ;
+      rr:objectMap [
+        rml:reference "geometrieId" ;
+        rr:datatype xsd:integer ;
+      ] ;
+    ] ,
+    [
+      rr:predicate ceo:heeftHerkomst ;
+      rr:objectMap [
+        rml:reference "herkomst/uri" ;
+        rr:termType rr:IRI ;
+      ] ;
+    ] ,
+    [
+      rr:predicate ceo:heeftGeometrieKwaliteit ;
+      rr:objectMap [
+        rml:reference "kwaliteitGeometrie/uri" ;
+        rr:termType rr:IRI ;
+      ] ;
+    ] ,
+    [
+      rr:predicate ceo:heeftGeometrieStatus ;
+      rr:objectMap [
+        rml:reference "statusGeometrie/uri" ;
+        rr:termType rr:IRI ;
+      ] ;
+    ] ,
+    [
+      rr:predicate 
+        pdok:asWKT-RD ,
+        ceo:asWKT-RD ;
+      rr:objectMap [
+        rml:reference "WKTRD" ;
+      ] ;
+    ] ,
+    [
+      rr:predicate gsp:asWKT ;
+      rr:objectMap [
+        rml:reference "WKT" ;
+        rr:datatype gsp:wktLiteral ;
+      ] ;
+    ] ;
+.
+
+######################################################################################
+# LocatieAanduiding Triples
+######################################################################################
+
+:LocatieAanduiding a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a carml:Stream ;
+    ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/locatieAanduiding" ;
+  ] ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/locatieaanduiding/{locatieAanduidingId}" ;
+    rr:class ceo:LocatieAanduiding ;
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate ceo:locatienaam ;
+    rr:objectMap [
+      rml:reference "locatienaam" ;
+    ] ;
+  ] ;
+.
+
+######################################################################################
+# Adresgegevens Triples
+######################################################################################
+
+:Adresgegevens a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a carml:Stream ;
+    ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "/cultuurHistorischeObjecten/rijksmonument/locatieAdres" ;
+  ] ;
+  rr:subjectMap [
+    rr:template "https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/adresgegevens/{locatieAdresId}" ;
+    rr:class ceo:Adresgegevens ;
+  ] ;
+.
+
+######################################################################################
 # Concept Triples
 ######################################################################################
 
-# :Concept a rr:TriplesMap ;
-#   rml:logicalSource [
-#     rml:source [
-#       a carml:Stream ;
-#     ] ;
-#     rml:referenceFormulation ql:XPath ;
-#     rml:iterator "//*[*/name()='preflabel']" ;
-#   ] ;
-#   rr:subjectMap [
-#     rml:reference "uri" ;
-#     rr:termType rr:IRI ;
-#     # rr:class skos:Concept ;
-#   ] ;
-#   rr:predicateObjectMap [
-#     rr:predicate skos:prefLabel ;
-#     rr:objectMap [
-#       rml:reference "preflabel" ;
-#       rr:language "nl" ;
-#     ] ;
-#   ] ;
-# .
+:Concept a rr:TriplesMap ;
+  rml:logicalSource [
+    rml:source [
+      a carml:Stream ;
+    ] ;
+    rml:referenceFormulation ql:XPath ;
+    rml:iterator "//*[*/name()='preflabel']" ;
+  ] ;
+  rr:subjectMap [
+    rml:reference "uri" ;
+    rr:termType rr:IRI ;
+    # rr:class skos:Concept ;
+  ] ;
+  rr:predicateObjectMap [
+    rr:predicate skos:prefLabel ;
+    rr:objectMap [
+      rml:reference "preflabel" ;
+      rr:language "nl" ;
+    ] ;
+  ] ;
+.
